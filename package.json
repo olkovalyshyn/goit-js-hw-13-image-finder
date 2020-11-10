@@ -51,6 +51,7 @@
   },
   "homepage": "https://github.com/olkovalyshyn/goit-js-hw-13-image-finder",
   "dependencies": {
+    "animated-scroll-to": "^2.0.12",
     "core-js": "^3.7.0"
   }
 }
