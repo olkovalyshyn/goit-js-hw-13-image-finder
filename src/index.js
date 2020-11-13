@@ -13,12 +13,13 @@ const imagesApiService = new ImagesApiService();
 
 const refs = {
   searchForm: document.querySelector(".search-form"),
-  loadMoreBtn: document.querySelector('[data-action="load-more"]'),
+  // loadMoreBtn: document.querySelector('[data-action="load-more"]'),
   imagesContainer: document.querySelector(".js-gallery"),
+  controlLine: document.querySelector("#control-line"),
 };
 
 refs.searchForm.addEventListener("submit", onSearch);
-refs.loadMoreBtn.addEventListener("click", onLoadMore);
+// refs.loadMoreBtn.addEventListener("click", onLoadMore);
 refs.imagesContainer.addEventListener("click", onOpenModal);
 
 // console.log("!!!imagesApiService", imagesApiService);
@@ -34,14 +35,14 @@ function onSearch(e) {
     onInfoNoTextForResearch();
   }
 
-  if (imagesApiService.query !== "") {
-    refs.loadMoreBtn.classList.remove("is-hidden");
-  }
+  // if (imagesApiService.query !== "") {
+  //   refs.loadMoreBtn.classList.remove("is-hidden");
+  // }
 }
-function onLoadMore() {
-  imagesApiService.fetchImages().then(appendImagesMarkup);
-  scrolling();
-}
+// function onLoadMore() {
+//   imagesApiService.fetchImages().then(appendImagesMarkup);
+//   // scrolling();
+// }
 
 function appendImagesMarkup(hits) {
   refs.imagesContainer.insertAdjacentHTML("beforeend", imageCard(hits));
@@ -51,21 +52,21 @@ function clearImagesContainer() {
   refs.imagesContainer.innerHTML = "";
 }
 
-function scrolling() {
-  const scrollHeight = document.documentElement.scrollHeight;
+// function scrolling() {
+//   const scrollHeight = document.documentElement.scrollHeight;
 
-  const clientHeight = document.documentElement.clientHeight;
-  const delta = scrollHeight - clientHeight;
+//   const clientHeight = document.documentElement.clientHeight;
+//   const delta = scrollHeight - clientHeight;
 
-  const scrollOptions = {
-    top: delta + 100,
-    left: 0,
-    behavior: "smooth",
-  };
-  setTimeout(() => {
-    window.scrollTo(scrollOptions);
-  }, 500);
-}
+//   const scrollOptions = {
+//     top: delta + 100,
+//     left: 0,
+//     behavior: "smooth",
+//   };
+//   setTimeout(() => {
+//     window.scrollTo(scrollOptions);
+//   }, 500);
+// }
 
 function onInfoNoTextForResearch() {
   error({
@@ -79,3 +80,17 @@ function onOpenModal(e) {
     <img src=${e.target.dataset.src}>`);
   instance.show();
 }
+
+const callback = (entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting && imagesApiService.query !== "") {
+      imagesApiService.fetchImages().then(appendImagesMarkup);
+    }
+  });
+};
+const options = {
+  rootMargin: "200px",
+};
+const observer = new IntersectionObserver(callback, options);
+
+observer.observe(refs.controlLine);
